@@ -114,8 +114,12 @@ module Pod
         system "pod install"
       end
 
-      `git add ./#{pod_name}.xcodeproj/project.pbxproj`
+      oldPath = Dir.pwd()
+      Dir.chdir(oldPath+"/../")
+      `git add #{oldPath}/#{pod_name}.xcodeproj/project.pbxproj`
       `git commit -m "feat: init commit"`
+      Dir.chdir(oldPath)
+
     end
 
     def clean_template_files
@@ -184,17 +188,26 @@ module Pod
 
     def reinitialize_git_repo
       `rm -rf .git`
-      `git init`
+      `rm -rf .gitignore`
+
+      oldPath = Dir.pwd()
+      Dir.chdir(oldPath+"/../")
+      # `rm -rf .git`
+      `rm -rf .gitignore`
+      # `git init`
+      
       # lz rename .gitignore
       print("pwd: " + Dir.pwd() + "\n")
       files = Dir.entries("./").join(' ')
       print("files = ", files, "\n")
       # `pwd`
       # `ls`
-      FileUtils.mv "PROJECT.gitignore", ".gitignore"
+      FileUtils.mv oldPath+"/PROJECT.gitignore", ".gitignore"
       `git add .gitignore`
       `git commit -m "feat: add .gitignore"`
       `git add -A`
+      
+      Dir.chdir(oldPath)
     end
 
     def validate_user_details
